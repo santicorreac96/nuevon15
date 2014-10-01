@@ -1,11 +1,12 @@
 package EstructuraDatos;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class NodoArbol<T>
 {
 	
-/*	private T elemento;
+	private T elemento;
 	
 	private NodoArbol<T> nodoDerecha;
 	
@@ -67,11 +68,11 @@ public class NodoArbol<T>
 		this.estado = estado;
 	}
 
-	public void insertar(NodoArbol<T> p, NodoArbol<T> q, Comparator<NodoArbol<T>> comparador) 
+	public void insertar(NodoArbol<T> p, NodoArbol<T> q, Comparator<T> comparador) 
 	{
 		// If compare node is smaller, continue with the left node
 		// q menor que p
-		if(comparador.compare(p, q)<0)
+		if(comparador.compare(p.getElemento(), q.getElemento())>0)
 		{
 			if(p.nodoIzquierda==null) 
 			{
@@ -79,7 +80,7 @@ public class NodoArbol<T>
 				q.setPadre(p);
 
 				// Node is inserted now, continue checking the balance
-				//TODO recursiveBalance(p);
+				balance(p);
 			} 
 			else 
 			{
@@ -88,7 +89,7 @@ public class NodoArbol<T>
 
 		} 
 		// q mayor que p
-		else if(comparador.compare(p, q)>0)
+		else if(comparador.compare(p.getElemento(), q.getElemento())<0)
 		{
 			if(p.nodoDerecha==null) 
 			{
@@ -96,7 +97,7 @@ public class NodoArbol<T>
 				q.setPadre(p);
 
 				// Node is inserted now, continue checking the balance
-				//TODO recursiveBalance(p);
+				balance(p);
 			} 
 			else 
 			{
@@ -119,24 +120,24 @@ public class NodoArbol<T>
 		  if(balance==-2) 
 		  {
 
-			  if(height(actual.getNodoIzquierda().getNodoIzquierda())>=height(actual.getNodoIzquierda().getNodoDerecha()))
+			  if(altura(actual.getNodoIzquierda().getNodoIzquierda())>=altura(actual.getNodoIzquierda().getNodoDerecha()))
 			  {
-				  actual = rotateRight(actual);
+				  actual = rotDerecha(actual);
 			  }
 			  else 
 			  {
-				  actual = doubleRotateLeftRight(actual);
+				  actual = rotIzqDer(actual);
 			  }
 		  } 
 		  else if(balance==2)
 		  {
-			  if(height(actual.getNodoDerecha().getNodoDerecha())>=height(actual.getNodoDerecha().getNodoIzquierda()))
+			  if(altura(actual.getNodoDerecha().getNodoDerecha())>=altura(actual.getNodoDerecha().getNodoIzquierda()))
 			  {
-				  actual = rotateLeft(actual);
+				  actual = rotIzquierda(actual);
 			  } 
 			  else
 			  {
-				  actual = doubleRotateRightLeft(actual);
+				  actual = rotDerIzq(actual);
 			  }
 		  }
 
@@ -152,9 +153,92 @@ public class NodoArbol<T>
 		  }
 	}
 
+	private NodoArbol<T> rotIzqDer(NodoArbol<T> actual) 
+	{
+		actual.setNodoIzquierda(rotIzquierda(actual.getNodoIzquierda()));
+		return rotDerecha(actual);
+	}
+
+	private NodoArbol<T> rotDerIzq(NodoArbol<T> actual) {
+		actual.setNodoDerecha(rotDerecha(actual.getNodoDerecha()));
+		return rotIzquierda(actual);
+	}
+
+	private NodoArbol<T> rotIzquierda(NodoArbol<T> actual) {
+		NodoArbol<T> v = actual.getNodoDerecha();
+		v.setPadre(actual.getPadre());
+
+		actual.setNodoDerecha(v.getNodoIzquierda()); 
+
+		if(actual.getNodoDerecha()!=null) {
+			actual.getNodoDerecha().setPadre(actual);
+		}
+
+		v.setNodoIzquierda(actual);
+		actual.setPadre(v);
+
+
+		if(v.getPadre()!=null) {
+			if(v.getPadre().getNodoDerecha()==actual) {
+				v.getPadre().setNodoDerecha(v);
+			} else if(v.getPadre().getNodoIzquierda()==actual) {
+				v.getPadre().setNodoIzquierda(v);
+			}
+		}
+
+		calcularBalance(actual);
+		calcularBalance(v);
+
+		return v;
+	}
+
+	private NodoArbol<T> rotDerecha(NodoArbol<T> actual) {
+		NodoArbol<T> v = actual.getNodoIzquierda();
+		v.setPadre(actual.getPadre());
+
+		actual.setNodoIzquierda(v.getNodoDerecha()); 
+
+		if(actual.getNodoIzquierda()!=null) {
+			actual.getNodoIzquierda().setPadre(actual);
+		}
+
+		v.setNodoDerecha(actual);
+		actual.setPadre(v);
+
+
+		if(v.getPadre()!=null) {
+			if(v.getPadre().getNodoDerecha()==actual) {
+				v.getPadre().setNodoDerecha(v);
+			} else if(v.getPadre().getNodoIzquierda()==actual) {
+				v.getPadre().setNodoIzquierda(v);
+			}
+		}
+
+		calcularBalance(actual);
+		calcularBalance(v);
+
+		return v;
+	}
+
+	public int altura(NodoArbol<T> nodo) {
+		 if(nodo==null) {
+			   return -1;
+			  }
+			  if(nodo.getNodoIzquierda()==null && nodo.getNodoDerecha()==null)
+			  {
+			   return 0;
+			  } else if(nodo.getNodoIzquierda()==null) {
+			   return 1+altura(nodo.getNodoDerecha());
+			  } else if(nodo.getNodoDerecha()==null) {
+			   return 1+altura(nodo.getNodoIzquierda());
+			  } else {
+			   return 1+Math.max(altura(nodo.getNodoIzquierda()),altura(nodo.getNodoDerecha()));
+			  }
+	}
+
 	private void calcularBalance(NodoArbol<T> actual) 
 	{
-		// TODO Auto-generated method stub
+		actual.setEstado(altura(actual.getNodoDerecha())-altura(actual.getNodoIzquierda()));
 		
 	}
 	
@@ -171,7 +255,29 @@ public class NodoArbol<T>
 		else if(comparadorEliminacion.compare(buscado.getElemento(),buscador.getElemento())==0)
 		{
 			eliminarNodo(buscador);
+			
 		}
+	}
+	
+	public T buscar(NodoArbol<T> buscador,NodoArbol<T> buscado,Comparator<T> comparadorbuscar) 
+	{
+		T resp = null;
+		if(buscador.getNodoIzquierda()!=null && comparadorbuscar.compare(buscado.getElemento(),buscador.getElemento())<0)  
+		{
+			resp = buscar(buscador.getNodoIzquierda(),buscado,comparadorbuscar);
+		} 
+		else if(buscador.getNodoDerecha()!=null && comparadorbuscar.compare(buscado.getElemento(),buscador.getElemento())>0) 
+		{
+			resp = buscar(buscador.getNodoDerecha(),buscado,comparadorbuscar);
+		}
+		else if(comparadorbuscar.compare(buscado.getElemento(),buscador.getElemento())==0)
+		{
+			if(buscador!=null)
+			{
+				return buscador.getElemento();
+			}
+		}
+		return resp;
 	}
 
 	private void eliminarNodo(NodoArbol<T> buscador) 
@@ -190,33 +296,64 @@ public class NodoArbol<T>
 		else 
 		{
 			// q has two children --> will be replaced by successor
-			r = successor(q);
-			q.key = r.key;
+			referencia = siguienteNodo(buscador);
+			buscador.setElemento(referencia.getElemento());
 		}
 
-		AvlNode p;
-		if(r.left!=null) {
-			p = r.left;
+		NodoArbol<T> aux = null;
+		if(referencia.getNodoIzquierda()!=null) {
+			aux = referencia.getNodoIzquierda();
 		} else {
-			p = r.right;
+			aux = referencia.getNodoDerecha();
 		}
 
-		if(p!=null) {
-			p.parent = r.parent;
+		if(aux!=null) {
+			aux.setPadre(referencia.getPadre());
 		}
 
-		if(r.parent==null) {
-			this.root = p;
+		if(referencia.getPadre()==null) {
+			arbol.setRaiz(aux);
 		} else {
-			if(r==r.parent.left) {
-				r.parent.left=p;
+			if(referencia==referencia.getPadre().getNodoIzquierda()) {
+				 referencia.getPadre().setNodoIzquierda(aux);
 			} else {
-				r.parent.right = p;
+				referencia.getPadre().setNodoDerecha(aux);
 			}
 			// balancing must be done until the root is reached.
-			recursiveBalance(r.parent);
+			balance(referencia.getPadre());
 		}
-		r = null;
+		referencia = null;
+		arbol.reducirPeso();
 
-	}*/
+	}
+
+	private NodoArbol<T> siguienteNodo(NodoArbol<T> buscador)
+	{
+		if(buscador.getNodoDerecha()!=null) {
+			NodoArbol<T> ref = buscador.getNodoDerecha();
+			while(ref.getNodoIzquierda()!=null) {
+				ref = ref.nodoIzquierda;
+			}
+			return ref;
+		} else {
+			NodoArbol<T> aux = buscador.getPadre();
+			while(aux!=null && buscador==aux.getNodoDerecha()) {
+				buscador = aux;
+				aux = buscador.getPadre();
+			}
+			return aux;
+		}
+	}
+	
+	public void inorder(NodoArbol<T> act,ArrayList lista)
+	{
+		if(act ==null)
+		{
+			return;
+		}
+		inorder(act.getNodoIzquierda(), lista);
+		lista.add(act.getElemento());
+		inorder(act.getNodoDerecha(), lista);	
+
+	}
 }
