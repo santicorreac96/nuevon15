@@ -1,52 +1,20 @@
 package Mundo;
 
-import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
-import javafx.embed.swing.JFXPanel;
-
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-
-public class Aplicacion extends JPanel
+public class Aplicacion 
 {
 	
 	private ArrayList listaPrueba;
 
 	
-	public Aplicacion(ICore core)
+	public Aplicacion()
 	{
-		listaPrueba = new ArrayList();
-		listaPrueba.add("New york");
-		listaPrueba.add("Miami");
-		listaPrueba.add("Panama");
-		listaPrueba.add("Bogota");
-		listaPrueba.add("Paris");
-		try {
-			construirMapaPosiciones();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		JFXPanel pane = new JFXPanel();
-		pane.setBorder(new TitledBorder("JFX"));
-		 new Mapa(pane, "Mapa").start();
-		this.setLayout(new BorderLayout());
-		this.add(pane,BorderLayout.CENTER);
-		revalidate();
-		repaint();
+		listaPrueba = new ArrayList();	
 	}
 	
 	public void construirMapaPorLatitudLongitud(String latitud, String longitud) throws Exception
@@ -97,6 +65,12 @@ public class Aplicacion extends JPanel
 		}
 		escritor.close();
 		lector.close();
+	}
+	
+	public void definirUbicacion(String ubic)
+	{
+		listaPrueba = new ArrayList();
+		listaPrueba.add(ubic);
 	}
 }
 
